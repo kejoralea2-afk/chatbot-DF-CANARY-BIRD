@@ -1,0 +1,21 @@
+{
+  "name": "DF CANARY BIRD AI",
+  "short_name": "CanaryAI",
+  "description": "Asisten Ahli Ternak Kenari DF Canary",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0b141a",
+  "theme_color": "#202c33",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/FsW8CpVv/20251121-082716.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.postimg.cc/FsW8CpVv/20251121-082716.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

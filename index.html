@@ -9,7 +9,6 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Perbaikan agar tinggi pas di layar HP */
         html, body { 
             height: 100%; 
             margin: 0; 
@@ -35,7 +34,6 @@
         input#apiKeyInput { background: #2a3942; border: 1px solid #00a884; color: white; border-radius: 8px; padding: 12px; width: 100%; margin-bottom: 15px; outline: none; }
         .btn-start { background: #00a884; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; width: 100%; }
 
-        /* Menggunakan Flexbox agar area chat mengisi sisa layar */
         #chatInterface { 
             display: none; 
             flex-direction: column; 
@@ -50,7 +48,7 @@
             align-items: center; 
             border-bottom: 1px solid #313d45; 
             position: relative;
-            flex-shrink: 0; /* Header tidak boleh mengecil atau terpotong */
+            flex-shrink: 0; 
         }
 
         .profile-pic { width: 42px; height: 42px; border-radius: 50%; margin-right: 12px; overflow: hidden; background: #313d45; flex-shrink: 0; }
@@ -59,7 +57,6 @@
         .dot-online { width: 8px; height: 8px; background-color: #00a884; border-radius: 50%; display: inline-block; animation: blink 1.5s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* Area Chat mengisi sisa layar dan bisa di-scroll */
         #chatBox { 
             flex: 1; 
             overflow-y: auto; 
@@ -81,7 +78,7 @@
             display: flex; 
             align-items: flex-end; 
             gap: 8px; 
-            flex-shrink: 0; /* Area ketik tidak boleh terpotong */
+            flex-shrink: 0; 
         }
 
         .input-wrapper { flex: 1; background: #2a3942; border-radius: 20px; padding: 5px 15px; display: flex; align-items: center; }
@@ -111,11 +108,10 @@
         <img src="https://i.postimg.cc/FsW8CpVv/20251121-082716.png" class="setup-logo">
         <h2 style="font-size: 18px; margin-bottom: 15px; color: #00a884;">Aktivasi DF Canary AI</h2>
         <div class="guide-box">
-            <strong>Cara Mendapatkan API Key:</strong>
+            <strong>Model: Gemini 2.5 Flash</strong>
             <ol style="margin-top: 10px; padding-left: 18px; margin-bottom: 10px;">
                 <li>Buka <b>aistudio.google.com</b></li>
-                <li>Login Akun Google & Klik <b>"Get API Key"</b>.</li>
-                <li>Pilih <b>"Create API Key in new project"</b>.</li>
+                <li>Gunakan API Key yang mendukung v2.5.</li>
             </ol>
             <p style="margin-top: 5px; font-size: 12px; border-top: 1px solid #3d4d56; padding-top: 10px;">
                 Hubungi via WA: <a href="https://wa.me/6282213054013" class="wa-link">082213054013</a>
@@ -230,7 +226,8 @@
         input.style.height = '24px';
         document.getElementById('typingIndicator').style.display = 'block';
 
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${USER_API_KEY}`;
+        // URL DIUPDATE KE GEMINI 2.5 FLASH
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${USER_API_KEY}`;
 
         try {
             const response = await fetch(API_URL, {
@@ -239,11 +236,16 @@
                 body: JSON.stringify({ contents: [{ parts: [{ text: "Kamu ahli kenari DF CANARY. Pertanyaan: " + text }] }] })
             });
             const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
+            
             const reply = data.candidates[0].content.parts[0].text;
             appendMessage('bot', reply);
             saveChat('bot', reply);
         } catch (e) {
-            appendMessage('bot', "❌ Gagal: Pastikan API Key benar.");
+            appendMessage('bot', "❌ Gagal: " + e.message + ". Pastikan API Key Anda mendukung model Gemini 2.5.");
         } finally {
             document.getElementById('typingIndicator').style.display = 'none';
         }

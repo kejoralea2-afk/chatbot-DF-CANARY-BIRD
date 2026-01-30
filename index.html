@@ -11,64 +11,71 @@
     <style>
         body { background-color: #0b141a; color: #e9edef; font-family: 'Segoe UI', sans-serif; height: 100vh; margin: 0; overflow: hidden; }
         
-        /* Layar Setup API Key */
         #setupScreen {
             position: fixed; inset: 0; background: #0b141a; z-index: 100;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 25px; text-align: center;
+            padding: 25px; text-align: center; overflow-y: auto;
         }
         .setup-card { background: #202c33; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 400px; width: 100%; }
+        .setup-logo { width: 70px; height: 70px; border-radius: 50%; margin-bottom: 15px; border: 2px solid #00a884; object-fit: cover; }
+
         .guide-box { background: #2a3942; padding: 15px; border-radius: 10px; text-align: left; font-size: 13px; margin-bottom: 20px; color: #d1d7db; border-left: 4px solid #00a884; }
-        
+        .wa-link { color: #00a884; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #00a884; }
+
         input#apiKeyInput { background: #2a3942; border: 1px solid #00a884; color: white; border-radius: 8px; padding: 12px; width: 100%; margin-bottom: 15px; outline: none; }
         .btn-start { background: #00a884; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; width: 100%; }
 
-        /* Chat UI */
         #chatInterface { display: none; flex-direction: column; height: 100vh; }
         .chat-header { background: #202c33; padding: 10px 16px; display: flex; align-items: center; border-bottom: 1px solid #313d45; }
-        .profile-pic { width: 45px; height: 45px; border-radius: 50%; margin-right: 12px; overflow: hidden; background: #313d45; }
+        .profile-pic { width: 45px; height: 45px; border-radius: 50%; margin-right: 12px; overflow: hidden; background: #313d45; flex-shrink: 0; }
         .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Status Online dengan Animasi Berkedip [cite: 2026-01-22] */
-        .status-container { display: flex; align-items: center; gap: 5px; margin-top: 1px; }
         .dot-online { width: 8px; height: 8px; background-color: #00a884; border-radius: 50%; display: inline-block; animation: blink 1.5s infinite; }
-        
-        @keyframes blink {
-            0% { opacity: 1; box-shadow: 0 0 0px #00a884; }
-            50% { opacity: 0.3; box-shadow: 0 0 8px #00a884; }
-            100% { opacity: 1; box-shadow: 0 0 0px #00a884; }
-        }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
         #chatBox { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; }
-        .msg { max-width: 85%; padding: 8px 12px; font-size: 14.5px; border-radius: 8px; word-wrap: break-word; }
-        .user { background: #005c4b; align-self: flex-end; border-top-right-radius: 0; }
-        .bot { background: #202c33; align-self: flex-start; border-top-left-radius: 0; }
+        
+        .msg { 
+            max-width: 85%; padding: 8px 12px; font-size: 14.5px; border-radius: 8px; 
+            word-wrap: break-word; 
+            white-space: pre-wrap; 
+        }
+        
+        .user { background: #005c4b; align-self: flex-end; border-top-right-radius: 0; color: white; }
+        .bot { background: #202c33; align-self: flex-start; border-top-left-radius: 0; color: #e9edef; }
 
-        .input-area { background: #202c33; padding: 10px; display: flex; align-items: center; gap: 8px; }
-        .input-wrapper { flex: 1; background: #2a3942; border-radius: 24px; padding: 5px 15px; display: flex; align-items: center; }
-        input#userInput { flex: 1; background: transparent; border: none; color: #d1d7db; outline: none; padding: 8px; }
-        .btn-send { background: #00a884; border: none; width: 42px; height: 42px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; }
+        .input-area { background: #202c33; padding: 10px; display: flex; align-items: flex-end; gap: 8px; }
+        .input-wrapper { flex: 1; background: #2a3942; border-radius: 20px; padding: 5px 15px; display: flex; align-items: center; }
+        
+        /* Area ketik yang bisa spasi bawah & bertambah tinggi otomatis */
+        textarea#userInput { 
+            flex: 1; background: transparent; border: none; color: #d1d7db; 
+            outline: none; padding: 8px 0; min-height: 24px; max-height: 120px; 
+            resize: none; font-size: 15px; line-height: 1.4;
+        }
+        
+        .btn-send { background: #00a884; border: none; width: 45px; height: 45px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-bottom: 2px; }
     </style>
 </head>
 <body>
 
 <div id="setupScreen">
     <div class="setup-card">
-        <img src="https://i.postimg.cc/FsW8CpVv/20251121-082716.png" width="60" style="border-radius:50%; margin-bottom:15px; border: 2px solid #00a884;">
+        <img src="https://i.postimg.cc/FsW8CpVv/20251121-082716.png" class="setup-logo">
         <h2 style="font-size: 18px; margin-bottom: 15px; color: #00a884;">Aktivasi DF Canary AI</h2>
-        
         <div class="guide-box">
-            <strong>Panduan Pengambilan API Key:</strong>
-            <ol style="margin-top: 10px; padding-left: 18px;">
-                <li>Kunjungi <b>aistudio.google.com</b></li>
-                <li>Login dengan Akun Google.</li>
-                <li>Klik <b>"Get API Key"</b> di menu samping.</li>
+            <strong>Cara Mendapatkan API Key:</strong>
+            <ol style="margin-top: 10px; padding-left: 18px; margin-bottom: 10px;">
+                <li>Buka <b>aistudio.google.com</b></li>
+                <li>Login Akun Google & Klik <b>"Get API Key"</b>.</li>
                 <li>Pilih <b>"Create API Key in new project"</b>.</li>
-                <li>Salin kodenya dan masukkan ke kolom di bawah.</li>
             </ol>
+            <p style="margin-top: 10px; font-size: 12px; border-top: 1px solid #3d4d56; padding-top: 10px;">
+                Bingung? Hubungi pembuat via WhatsApp: <br>
+                <a href="https://wa.me/6282213054013" class="wa-link">082213054013</a>
+            </p>
         </div>
-
-        <input type="password" id="apiKeyInput" placeholder="Masukkan API Key Anda...">
+        <input type="password" id="apiKeyInput" placeholder="Tempel API Key di sini...">
         <button class="btn-start" onclick="saveApiKey()">MASUK KE CHATBOT</button>
     </div>
 </div>
@@ -79,7 +86,7 @@
         <div style="flex:1">
             <h1 style="font-size: 16px; margin:0;">DF CANARY BIRD</h1>
             <div style="font-size: 12px; color: #8696a0; line-height: 1;">082213054013</div>
-            <div class="status-container">
+            <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
                 <span class="dot-online"></span>
                 <small style="color:#00a884; font-size: 12px;">Online</small>
             </div>
@@ -92,7 +99,7 @@
 
     <div class="input-area">
         <div class="input-wrapper">
-            <input type="text" id="userInput" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <textarea id="userInput" placeholder="Ketik pesan..." oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
         </div>
         <button class="btn-send" onclick="sendMessage()">➔</button>
     </div>
@@ -101,18 +108,11 @@
 <script>
     let USER_API_KEY = localStorage.getItem('user_canary_key_25');
 
-    window.onload = () => {
-        if (USER_API_KEY) {
-            showChat();
-        }
-    };
+    window.onload = () => { if (USER_API_KEY) showChat(); };
 
     function saveApiKey() {
         const key = document.getElementById('apiKeyInput').value.trim();
-        if (key.length < 15) {
-            alert("Harap masukkan API Key yang valid!");
-            return;
-        }
+        if (key.length < 15) { alert("API Key tidak valid!"); return; }
         localStorage.setItem('user_canary_key_25', key);
         USER_API_KEY = key;
         showChat();
@@ -124,16 +124,23 @@
         const history = JSON.parse(localStorage.getItem('canary_chat_history_25')) || [];
         document.getElementById('chatBox').innerHTML = ''; 
         history.forEach(m => appendMessage(m.role, m.text));
-        if(history.length === 0) {
-            appendMessage('bot', "Halo! DF CANARY siap membantu Anda. Silakan ketik pertanyaan Anda seputar burung kenari.");
-        }
     }
 
-    function logout() {
-        if(confirm("Ganti API Key?")) {
-            localStorage.removeItem('user_canary_key_25');
-            location.reload();
+    function logout() { if(confirm("Ganti API Key?")) { localStorage.removeItem('user_canary_key_25'); location.reload(); } }
+
+    // Membuat kotak ketik bertambah tinggi saat Enter
+    function autoResize(el) {
+        el.style.height = '24px';
+        el.style.height = el.scrollHeight + 'px';
+    }
+
+    // Mengatur agar Enter = Baris Baru, Ctrl+Enter = Kirim
+    function handleKey(e) {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            sendMessage();
         }
+        // Enter biasa akan membuat baris baru secara alami di textarea
     }
 
     async function sendMessage() {
@@ -144,6 +151,7 @@
         appendMessage('user', text);
         saveChat('user', text);
         input.value = '';
+        input.style.height = '24px';
         document.getElementById('typingIndicator').style.display = 'block';
 
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${USER_API_KEY}`;
@@ -152,17 +160,14 @@
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: "Kamu adalah ahli kenari DF CANARY. Jawab dengan ringkas. Pertanyaan: " + text }] }] })
+                body: JSON.stringify({ contents: [{ parts: [{ text: "Kamu ahli kenari DF CANARY. Jawab ramah & rapi. Pertanyaan: " + text }] }] })
             });
-
             const data = await response.json();
-            if (!response.ok) throw new Error(data.error ? data.error.message : "Error koneksi.");
-
             const reply = data.candidates[0].content.parts[0].text;
             appendMessage('bot', reply);
             saveChat('bot', reply);
         } catch (e) {
-            appendMessage('bot', "❌ Masalah Koneksi: " + e.message);
+            appendMessage('bot', "❌ Gagal: " + e.message);
         } finally {
             document.getElementById('typingIndicator').style.display = 'none';
         }
@@ -172,7 +177,7 @@
         const box = document.getElementById('chatBox');
         const div = document.createElement('div');
         div.className = `msg ${role}`;
-        div.innerText = text;
+        div.textContent = text; 
         box.appendChild(div);
         box.scrollTop = box.scrollHeight;
     }
